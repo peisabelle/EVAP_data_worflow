@@ -13,34 +13,30 @@ import process_micromet as pm
 
 ### Define paths
 
-allStations     = ["Berge","Foret_ouest","Foret_est","Foret_sol","Reservoir"]
-eddyCovStations = ["Berge","Foret_ouest","Foret_est","Reservoir"]
-gapfilledStation = ["Berge","Foret_ouest","Foret_est","Reservoir","Water_stations","Forest_stations"]
+allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy","Trees","Juvenile_Geonor"]
+eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
+gapfilledStation = ["Sapling","Juvenile_NO","Juvenile_SE"]
 
-rawFileDir          = "D:/E/Ro2_micromet_raw_data/Data/"
-asciiOutDir         = "D:/E/Ro2_micormet_processed_data/Ascii_data/"
-eddyproOutDir       = "D:/E/Ro2_micormet_processed_data/Eddypro_data/"
-eddyproConfigDir    = "D:/E/Ro2_data_worflow/Config/EddyProConfig/"
+rawFileDir          = "E:/EVAP/Data_EVAP/Raw_Data/Binary/"
+asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
+eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM"
+eddyproConfigDir    = "C:/Users/peisa/Documents/EVAP/EddyPro/"
 externalDataDir     = "D:/E/Ro2_micromet_raw_data/Data/External_data/"
-varNameExcelTab     = "./Resources/EmpreinteVariableDescription.xlsx"
-mergedCsvOutDir     = "C:/Users/anthi182/Documents/Python/Explore_mds_gf/Data/"
+varNameExcelTab     = "./Resources/FMVariableDescription.xlsx"
+mergedCsvOutDir     = "E:/EVAP/Data_EVAP/Processed_Data/Merged_CSV/"
 gapfillConfigDir    = "./Config/GapFillingConfig/"
 
-dates = {'start':'2018-06-22','end':'2020-02-01'}
+dates = {'start':'2015-10-22','end':'2016-01-01'}
 
 ### Process external data
 
-# Merge Hobo TidBit thermistors
-pm.merge_thermistors(dates, rawFileDir, mergedCsvOutDir)
+# Merge Tree Heat thermistors
 
-# Make Natashquan data
-pm.merge_natashquan(dates, externalDataDir, mergedCsvOutDir)
 
-# Merge data relative to reservoir provided by HQ
-pm.merge_hq_reservoir(dates, externalDataDir, mergedCsvOutDir)
+# Merge ECCC station data
 
-# Extract data from the HQ weather station
-pm.merge_hq_meteo_station(dates, externalDataDir, mergedCsvOutDir)
+
+# Merge MDDELCC station data
 
 
 ### Process eddy covariance stations
