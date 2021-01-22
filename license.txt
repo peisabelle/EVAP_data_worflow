@@ -1,4 +1,4 @@
-Copyright (c) 2020, Université Laval (contributors: Antoine Thiboult)
+Copyright (c) 2020, Université Laval (contributors: Antoine Thiboult, Pierre-Erik Isabelle)
 
 Other attributions :
 All files contained in the folder ./Bin/EddyPro:  Copyright (c) 2020, LI-COR (www.licor.com)
