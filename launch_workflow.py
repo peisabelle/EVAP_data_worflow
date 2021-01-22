@@ -10,6 +10,12 @@ import process_micromet as pm
 # TODO Account for energy storage in soil above flux plates to include it in G
 # TODO Acconut for LE and H storage between ground and flux instrument ? How without several temperature sensors ?
 # TODO implement energy balance correction
+# TODO add script to average/sum minute to half-hour for slow data
+# TODO create script to merge and interpolate governement stations data
+# TODO add fix_timelapse to workflow
+# TODO check if units are converted when needed
+# TODO create precipitation series precip_FM
+# TODO create theoretical radiation series and calculate diffuse fraction
 
 ### Define paths
 
@@ -18,9 +24,9 @@ eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
 gapfilledStation = ["Sapling","Juvenile_NO","Juvenile_SE"]
 
 rawFileDir          = "E:/EVAP/Data_EVAP/Raw_Data/Binary/"
-asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
+asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/Test/"
 eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM"
-eddyproConfigDir    = "C:/Users/peisa/Documents/EVAP/EddyPro/"
+eddyproConfigDir    = "./Config/EddyProConfig/"
 externalDataDir     = "D:/E/Ro2_micromet_raw_data/Data/External_data/"
 varNameExcelTab     = "./Resources/FMVariableDescription.xlsx"
 mergedCsvOutDir     = "E:/EVAP/Data_EVAP/Processed_Data/Merged_CSV/"
@@ -35,7 +41,7 @@ dates = {'start':'2015-10-22','end':'2016-01-01'}
 
 # Merge ECCC station data
 
-tst
+
 # Merge MDDELCC station data
 
 

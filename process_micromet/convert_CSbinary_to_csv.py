@@ -47,8 +47,8 @@ def convert_CSbinary_to_csv(stationName,rawFileDir,asciiOutDir):
     # Open error log file
     logf = open("convert_CSbinary_to_csv.log", "w")
 
-    #Find folders that match the pattern Ro2_YYYYMMDD
-    listFieldCampains = [f for f in os.listdir(rawFileDir) if re.match(r'^Ro2_[0-9]{8}$', f)]
+    #Find folders that match the pattern FM_YYYYMMDD
+    listFieldCampains = [f for f in os.listdir(rawFileDir) if re.match(r'^FM_[0-9]{8}$', f)]
 
     for iFieldCampain in listFieldCampains:
 
