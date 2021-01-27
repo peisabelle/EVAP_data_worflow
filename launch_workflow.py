@@ -19,7 +19,7 @@ import process_micromet as pm
 
 ### Define paths
 
-allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy","Trees","Juvenile_Geonor"]
+allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy","Juvenile_Geonor"]
 eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
 gapfilledStation = ["Sapling","Juvenile_NO","Juvenile_SE"]
 
