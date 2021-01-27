@@ -36,7 +36,7 @@ def detect_spikes(df, spiky_var, sliding_window=624, z=4, daynight=False):
         nee_night = nee[daytime==0]
 
         # Identify outliers during day time
-        di = -nee_day.diff(periods=1) + nee_day.diff(periods=-1)
+        di = nee_day.diff(periods=1) + nee_day.diff(periods=-1)
         Md = di.rolling(window=sliding_window, center=True, min_periods=1).median()
         MAD = abs(di-Md).median()
         lowerBound = Md - (z*MAD / 0.6745)
