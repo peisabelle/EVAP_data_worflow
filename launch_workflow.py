@@ -19,20 +19,18 @@ import process_micromet as pm
 
 ### Define paths
 
-allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy","Juvenile_Geonor"]
+allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
 eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
 gapfilledStation = ["Sapling","Juvenile_NO","Juvenile_SE"]
 
 rawFileDir          = "E:/EVAP/Data_EVAP/Raw_Data/Binary/"
-asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/Test/"
+asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/CSV/"
 eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM"
 eddyproConfigDir    = "./Config/EddyProConfig/"
 externalDataDir     = "D:/E/Ro2_micromet_raw_data/Data/External_data/"
 varNameExcelTab     = "./Resources/FMVariableDescription.xlsx"
 mergedCsvOutDir     = "E:/EVAP/Data_EVAP/Processed_Data/Merged_CSV/"
 gapfillConfigDir    = "./Config/GapFillingConfig/"
-
-dates = {'start':'2015-10-22','end':'2016-01-01'}
 
 ### Process external data
 
@@ -45,23 +43,35 @@ dates = {'start':'2015-10-22','end':'2016-01-01'}
 # Merge MDDELCC station data
 
 
-### Process eddy covariance stations
+### Process eddy covariance stations - Convert binary to CSV
 for iStation in allStations:
 
     # Binary to ascii
     pm.convert_CSbinary_to_csv(iStation,rawFileDir,asciiOutDir)
 
+### Process eddy covariance stations - Merge and trim CSVs
+for iStation in allStations:
+    
     # Merge slow data
     slow_df = pm.merge_slow_csv(iStation,asciiOutDir)
 
     # Rename and trim slow variables
     slow_df = pm.rename_trim_vars(iStation,varNameExcelTab,slow_df,'cs')
 
+### Process eddy covariance stations - Batch process EddyPro
+dates = {'start':'2015-10-22','end':'2016-01-01'}
+for iStation in allStations:
+    
     if iStation in eddyCovStations:
 
         # Ascii to eddypro
         pm.batch_process_eddypro(iStation,asciiOutDir,eddyproConfigDir,eddyproOutDir,dates)
 
+
+### Process eddy covariance stations - Merge and trim all.
+for iStation in allStations:
+    
+    if iStation in eddyCovStations:
         # Load eddypro file
         eddy_df = pm.load_eddypro_file(iStation,eddyproOutDir)
 
