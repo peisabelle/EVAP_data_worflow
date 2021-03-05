@@ -28,8 +28,8 @@ def batch_process_eddypro(stationName,asciiOutDir,eddyproConfigDir,eddyproOutDir
     print('Start Eddy Pro processing for station:', stationName, '...', end='\r')
 
     eddyproOutDir   = eddyproOutDir + stationName
-    eddyproConfig   = eddyproConfigDir + "Ro2_" + stationName + ".eddypro"
-    eddyproMetaData = eddyproConfigDir + "Ro2_" + stationName + ".metadata"
+    eddyproConfig   = eddyproConfigDir + "FM_" + stationName + ".eddypro"
+    eddyproMetaData = eddyproConfigDir + "FM_" + stationName + ".metadata"
     asciiOutDir     = asciiOutDir + stationName
 
     # Read in the Eddy Pro config file and replace target strings
@@ -58,6 +58,30 @@ def batch_process_eddypro(stationName,asciiOutDir,eddyproConfigDir,eddyproOutDir
                 print(line,end='\n')
             elif re.match(r'pr_end_time',line):
                 line = re.sub(r'^pr_end_time=.*$',"pr_end_time="+"00:00", line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'sa_start_date',line):
+                line = re.sub(r'^sa_start_date=.*$',"sa_start_date="+dates['start'], line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'sa_start_time',line):
+                line = re.sub(r'^sa_start_time=.*$',"sa_start_time="+"00:00", line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'sa_end_date',line):
+                line = re.sub(r'^sa_end_date=.*$',"sa_end_date="+dates['end'], line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'sa_end_time',line):
+                line = re.sub(r'^sa_end_time=.*$',"sa_end_time="+"00:00", line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'pf_start_date',line):
+                line = re.sub(r'^pf_start_date=.*$',"pf_start_date="+dates['start'], line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'pf_start_time',line):
+                line = re.sub(r'^pf_start_time=.*$',"pf_start_time="+"00:00", line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'pf_end_date',line):
+                line = re.sub(r'^pf_end_date=.*$',"pf_end_date="+dates['end'], line.rstrip())
+                print(line,end='\n')
+            elif re.match(r'pf_end_time',line):
+                line = re.sub(r'^pf_end_time=.*$',"pf_end_time="+"00:00", line.rstrip())
                 print(line,end='\n')
             else:
                 print(line,end='')

@@ -35,7 +35,7 @@ station_id=
 
 [Timing]
 acquisition_frequency=10.000
-file_duration=30
+file_duration=1440
 pc_time_settings=local
 
 [Instruments]

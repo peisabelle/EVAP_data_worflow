@@ -19,13 +19,13 @@ import process_micromet as pm
 
 ### Define paths
 
-allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
+allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy","CanopyCR5000"]
 eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
 gapfilledStation = ["Sapling","Juvenile_NO","Juvenile_SE"]
 
 rawFileDir          = "E:/EVAP/Data_EVAP/Raw_Data/Binary/"
 asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/CSV/"
-eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM"
+eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
 eddyproConfigDir    = "./Config/EddyProConfig/"
 externalDataDir     = "D:/E/Ro2_micromet_raw_data/Data/External_data/"
 varNameExcelTab     = "./Resources/FMVariableDescription.xlsx"
@@ -59,7 +59,7 @@ for iStation in allStations:
     slow_df = pm.rename_trim_vars(iStation,varNameExcelTab,slow_df,'cs')
 
 ### Process eddy covariance stations - Batch process EddyPro
-dates = {'start':'2015-10-22','end':'2016-01-01'}
+dates = {'start':'2015-10-28','end':'2016-01-01'}
 for iStation in allStations:
     
     if iStation in eddyCovStations:
