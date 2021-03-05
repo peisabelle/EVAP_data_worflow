@@ -50,7 +50,7 @@ lf_meth=1
 wpl_meth=1
 foot_meth=1
 tob1_format=0
-out_path=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FMSapling
+out_path=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Sapling
 fix_out_format=0
 err_label=NaN
 qc_meth=1
@@ -340,9 +340,9 @@ aa_lim=10.0
 ns_hf_lim=0.5
 
 [RawProcess_TiltCorrection_Settings]
-pf_start_date=2015-10-27
-pf_end_date=2021-01-08
-pf_start_time=03:00
+pf_start_date=2015-10-28
+pf_end_date=2016-01-01
+pf_start_time=00:00
 pf_end_time=00:00
 pf_mode=1
 pf_north_offset=0
