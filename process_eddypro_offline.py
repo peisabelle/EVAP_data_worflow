@@ -18,12 +18,20 @@ eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
 eddyproConfigDir    = "./Config/EddyProConfig/"
 
 ### Process eddy covariance stations - Batch process EddyPro
-dates = {'start':'2015-10-28','end':'2016-01-01'}
+study_years = {'2015': {'start': '2015-10-28', 'end': '2016-01-01'}, 
+               '2016': {'start': '2016-01-01', 'end': '2017-01-01'},
+               '2017': {'start': '2017-01-01', 'end': '2018-01-01'},
+               '2018': {'start': '2018-01-01', 'end': '2019-01-01'},
+               '2019': {'start': '2019-01-01', 'end': '2020-01-01'},
+               '2020': {'start': '2020-01-01', 'end': '2020-10-01'}}
 
-# Ascii to eddypro
-for iStation in allStations:
+
+# Loop over study years
+for iYear in study_years:
+    dates = study_years[iYear]
     
-    if iStation in eddyCovStations:
+    # Loop over stations
+    for iStation in eddyCovStations:
 
         #Ascii to eddypro
-        pm.batch_process_eddypro('Sapling',asciiOutDir,eddyproConfigDir,eddyproOutDir,dates)
+        pm.batch_process_eddypro(iStation,asciiOutDir,eddyproConfigDir,eddyproOutDir,dates)
