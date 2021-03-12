@@ -30,7 +30,7 @@ def batch_process_eddypro(stationName,asciiOutDir,eddyproConfigDir,eddyproOutDir
     eddyproOutDir   = eddyproOutDir + stationName
     eddyproConfig   = eddyproConfigDir + "FM_" + stationName + ".eddypro"
     eddyproMetaData = eddyproConfigDir + "FM_" + stationName + ".metadata"
-    asciiOutDir     = asciiOutDir + stationName
+    asciiOutDir     = asciiOutDir + stationName + '/ts_data'
 
     # Read in the Eddy Pro config file and replace target strings
     with fileinput.FileInput(eddyproConfig, inplace=True) as file:

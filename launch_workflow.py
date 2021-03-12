@@ -19,12 +19,12 @@ import process_micromet as pm
 
 ### Define paths
 
-allStations     = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy","CanopyCR5000"]
-eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE","Canopy"]
+allStations     = ["Sapling","Juvenile_NO","Juvenile_SE"]#,"Canopy","CanopyCR5000"]
+eddyCovStations = ["Sapling","Juvenile_NO","Juvenile_SE"]#,"Canopy"]
 gapfilledStation = ["Sapling","Juvenile_NO","Juvenile_SE"]
 
 rawFileDir          = "E:/EVAP/Data_EVAP/Raw_Data/Binary/"
-asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/CSV/"
+asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
 eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
 eddyproConfigDir    = "./Config/EddyProConfig/"
 externalDataDir     = "D:/E/Ro2_micromet_raw_data/Data/External_data/"
