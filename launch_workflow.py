@@ -1,17 +1,19 @@
 import process_micromet as pm
-from utils import data_loader as dl
+from utils import data_loader as dl, dataframe_manager as dfm
 import pandas as pd
 
 ### Define paths
 
-CampbellStations =  ["Berge","Foret_ouest","Foret_est","Foret_sol","Reservoir","Bernard_lake"]
+CampbellStations =  ["Berge","Berge_precip","Foret_ouest","Foret_est","Foret_sol","Foret_precip","Reservoir","Bernard_lake"]
 eddyCovStations =   ["Berge","Foret_ouest","Foret_est","Reservoir","Bernard_lake"]
 gapfilledStation =  ["Bernard_lake","Water_stations","Forest_stations"]
 
 station_name_conversion = {'Berge': 'Romaine-2_reservoir_shore',
+                           'Berge_precip': 'Romaine-2_reservoir_shore_precip',
                            'Foret_ouest': 'Bernard_spruce_moss_west',
                            'Foret_est': 'Bernard_spruce_moss_east',
                            'Foret_sol': 'Bernard_spruce_moss_ground',
+                           'Foret_precip': 'Bernard_spruce_moss_precip',
                            'Reservoir': 'Romaine-2_reservoir_raft',
                            'Bernard_lake': 'Bernard_lake'}
 
@@ -58,41 +60,46 @@ for iStation in CampbellStations:
     if iStation in eddyCovStations:
         pm.correct_raw_concentrations(iStation,asciiOutDir,gasAnalyzerConfigDir,False)
     # Rotate wind
-    pm.rotate_wind(iStation,asciiOutDir)
-    # Merge slow data
-    slow_df = pm.merge_slow_csv(dates,iStation,asciiOutDir)
+    if iStation == 'Reservoir':
+        pm.rotate_wind(iStation,asciiOutDir)
+    # List slow files
+    slow_files = dfm.list_files(iStation, '*slow.csv', asciiOutDir)
+    # Create reference dataframe and merge slow files
+    df = dfm.create(dates)
+    df = dfm.merge_files(df,slow_files,'TOA5')
     # Rename and trim slow variables
-    slow_df = pm.rename_trim_vars(iStation,varNameExcelSheet,slow_df,'cs')
+    df = pm.rename_trim_vars(iStation,varNameExcelSheet,df,'cs')
 
     if iStation in eddyCovStations:
         # Ascii to eddypro
         pm.eddypro.run(iStation,asciiOutDir,eddyproConfigDir,
                        eddyproOutDir,dates)
-        # Load eddypro file
-        eddy_df = pm.eddypro.merge(iStation,eddyproOutDir,dates)
+        # List EddyPro files
+        eddypro_files = dfm.list_files(iStation, '*full_output*.csv', eddyproOutDir)
+        # Create reference dataframe and merge EddyPro files
+        eddy_df = dfm.create(dates)
+        eddy_df = dfm.merge_files(eddy_df,eddypro_files,'EddyPro')
         # Rename and trim eddy variables
         eddy_df = pm.rename_trim_vars(iStation,varNameExcelSheet,
                                       eddy_df,'eddypro')
         # Merge slow and eddy data
-        df = pm.merge_slow_csv_and_eddypro(iStation,slow_df,eddy_df)
+        df = dfm.merge(df,eddy_df)
 
-    else:
-        # Rename Dataframe
-        df = slow_df
-
-    # Save to csv
-    df.to_csv(intermediateOutDir+iStation+'.csv',index=False)
+    dfm.save(df,intermediateOutDir,iStation)
 
 
 for iStation in CampbellStations:
     # Load csv
-    df = pd.read_csv(intermediateOutDir+iStation+'.csv')
+    df = dl.csv(intermediateOutDir+iStation)
     # Handle exceptions
     df = pm.handle_exception(iStation,df)
     # Filter data
     df = pm.filters.apply_all(iStation,df,filterConfigDir,intermediateOutDir)
     # Save to csv
-    df.to_csv(finalOutDir+iStation+'.csv',index=False)
+    dfm.save(df,finalOutDir,iStation)
+    # Format reanalysis data
+    pm.reanalysis.netcdf_to_dataframe(dates,iStation,filterConfigDir,
+                                      reanalysisDir,intermediateOutDir)
 
 
 for iStation in gapfilledStation:
@@ -127,4 +134,10 @@ for iStation in gapfilledStation:
         df = pm.gap_fill_flux.gap_fill_flux(iStation,df,gapfillConfigDir)
 
     # Save to csv
-    df.to_csv(finalOutDir+iStation+'.csv',index=False)
+    dfm.save(df,finalOutDir,iStation)
+
+
+for iStation in eddyCovStations:
+    df = pd.read_csv(finalOutDir+iStation+'.csv')
+    fp = pm.footprint.compute(df)
+    pm.footprint.dump(iStation,fp,finalOutDir)

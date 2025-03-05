@@ -4,13 +4,26 @@ import os
 import pandas as pd
 import numpy as np
 import yaml
+from . import precipitation_gauge as pg
 import pysolar # conda install -c conda-forge pysolar
+from pathlib import Path
+from utils import data_loader as dl
 
 
 def apply_all(stationName,df,filter_config_dir,proxy_data_dir):
 
     # Get station information for filtering
     config = get_station_info(stationName,filter_config_dir)
+
+    # Precipitation
+    if config['precipitation'] == 'all_weather':
+        df = allweather_precipitation(df)
+    elif config['precipitation'] == 'tipping_bucket':
+        df = tipbucket_precipitation(df)
+
+    # Propeller anemometer
+    if config['anemometer'] == 'propeller':
+        df = propeller_anemometer(df)
 
     # Radiations
     if config['radiation']:
@@ -41,7 +54,7 @@ def apply_all(stationName,df,filter_config_dir,proxy_data_dir):
     for var in config['flux_vars']+config['strg_vars']:
         df = remove_flux_and_storage(df,var,id_rain)
 
-     # Remove spikes
+    # Remove spikes
     for var in config['flux_vars']:
         id_spike = spikes(df,var)
         df = remove_flux_and_storage(df,var,id_spike)
@@ -55,8 +68,12 @@ def apply_all(stationName,df,filter_config_dir,proxy_data_dir):
 
     # Remove flux below the friction velocity threshold for carbon
     for var in config['friction_vel']['vars']:
-        id_fric_vel, fvt_series = run_friction_velocity_threshold(
-            df,var,config['friction_vel']['temperature_var'],True)
+        if config['station_type'] == 'land':
+            id_fric_vel, fvt_series = run_friction_velocity_threshold(
+                df,var,config['friction_vel']['temperature_var'],True)
+        elif config['station_type'] == 'water':
+            id_fric_vel, fvt_series = run_aquatic_friction_velocity_threshold(
+                df, var)
         df = remove_flux_and_storage(df,var,id_fric_vel)
         df['friction_vel_thresholds'] = fvt_series
 
@@ -71,22 +88,63 @@ def get_station_info(stationName,filter_config_dir):
 def proxy_station_loader(proxy_station,proxy_data_dir,proxy_var):
     # Load proxy files until it contains variable information
     for proxy in proxy_station:
-        df_proxy = pd.read_csv(os.path.join(
-            proxy_data_dir, f'{proxy}.csv'), low_memory=False)
+        df_proxy = dl.csv(Path(proxy_data_dir).joinpath(proxy))
         if proxy_var in df_proxy.columns:
             break
     return df_proxy
 
 
+def allweather_precipitation(df):
+    precip_cum = pg.precip_cum(df.index.values, df['geonor_depth'].values)
+    precip_int = pg.precip_intensity(precip_cum)
+    df['precip_cum_t200b'] = precip_cum
+    df['precip_intensity_t200b'] = precip_int
+    return df
+
+def tipbucket_precipitation(df, air_temp_var='air_temp_HMP45C', precip_var='precip_TB4'):
+    """
+    Remove potentially contaminated precipitation data. Data is kept only if
+    the air temperature did not fall below freezing point in the last 5 days
+
+    Parameters
+    ----------
+    df :
+        Pandas Dataframe
+    air_temp_var : String, optional
+        Name of the variable that is used to track temperature.
+        The default is 'air_temp_HMP45C'.
+    precip_var : String, optional
+        Name of the precipitation variable to be filtered. The default
+        is 'precip_TB4'.
+
+    Returns
+    -------
+    df : Pandas Dataframe
+    """
+    if air_temp_var not in df.columns:
+       air_temp_var = 'air_temp_HC2S3'
+    id_rm = (df[air_temp_var] < 0 ).rolling(window=48*5, min_periods=1, center=False ).max().astype(bool)
+    df.loc[id_rm,'precip_TB4'] = np.nan
+    return df
+
+
+def propeller_anemometer(df):
+    id_rm = (df['wind_speed_05103'] > 30) | (df['wind_speed_05103'] < 0)
+    df.loc[id_rm,'wind_speed_05103'] = np.nan
+    return df
+
+
 def radiation(df,lat,lon):
     """Filters radiations
-        - cap downward short wave solar radiations with theoretical max value
+        - cap downward short wave solar radiations with theoretical max value.
+            If it exceeced, replaced with max theoretical value.
         - filter out downward short wave solar radiations that are affected
-            by snow on sensor during daytime
+            by snow on sensor during daytime (measured albedo > 0.9), and
+            recompute downward short wave solar radiations from upward
+            short wave radiation and 2-day mean rolling albedo
         - set all negative measurements to 0
         - recompute albedo
-        - cap downward short wave solar radiations with albedo
-        - removes suspicious upwelling shortwave radiations
+        - removes suspicious upwelling shortwave radiations (spikes)
         - recompute net radiation
 
     Parameters
@@ -106,54 +164,63 @@ def radiation(df,lat,lon):
         Pandas Dataframe with radiation filtered out and corrected
     """
 
-    # Computes sun angle and max theorethical downward shortwave values
+    # Cap downward shortwave solar radiation with max theoretical value
     df['solar_angle'] = np.nan
-    rad_short_down_max = np.zeros((df.shape[0],))
-    dates = df['timestamp'].dt.tz_localize('Etc/GMT+5').dt.to_pydatetime()
-    for counter, iDate in enumerate(dates):
+    for date in df.index:
         altitude_deg = pysolar.solar.get_altitude(
-            lat,lon,iDate)
+            lat,lon, date.tz_localize('Etc/GMT+5').to_pydatetime())
         altitude_deg = max(0, altitude_deg)
-        df.loc[counter,'solar_angle'] = altitude_deg
+        df.loc[date,'solar_angle'] = altitude_deg
         max_rad = 1370 * np.sin(np.deg2rad(altitude_deg))
-        rad_short_down_max[counter] = max_rad
-
-    # Filter unplausible downward short wave solar radiations
-    id_sub = df['rad_shortwave_down_CNR4'] > rad_short_down_max
-    df.loc[id_sub,'rad_shortwave_down_CNR4'] = rad_short_down_max[id_sub]
+        if df.loc[date, 'rad_shortwave_down_CNR4'] > max_rad:
+            df.loc[date, 'rad_shortwave_down_CNR4'] = max_rad
+    # Set negative downward solar radiation to zero
     id_sub = df['rad_shortwave_down_CNR4'] < 0
     df.loc[id_sub,'rad_shortwave_down_CNR4'] = 0
 
-    # Filter upward short wave solar radiations
+    # Set negative upward solar radiation to zero
     id_sub = df['rad_shortwave_up_CNR4'] < 0
     df.loc[id_sub,'rad_shortwave_up_CNR4'] = 0
+    # Set upward solar radiation to zero when downward is zero
     id_sub = df['rad_shortwave_down_CNR4'] == 0
     df.loc[id_sub,'rad_shortwave_up_CNR4'] = 0
 
-    # Filter downward radiation for snow obstruction during daytime
+    # Filter spiky longwave radiation
+    longwave_vars = ['rad_longwave_down_CNR4', 'rad_longwave_up_CNR4']
+    id_spikes = \
+        (
+        df[longwave_vars] - df[longwave_vars].rolling(
+        window=48*10,min_periods=1).median() > 125
+        ).any(axis=1)
+    df.loc[id_spikes, longwave_vars] = np.nan
+
+    # Filter downward long and shortwave radiation for snow obstruction
+    # during daytime (albedo > .85)
     id_sub = (df['rad_shortwave_up_CNR4'] >
               (0.85 * df['rad_shortwave_down_CNR4'])) \
               & (df['rad_shortwave_up_CNR4'] > 25*0.85)
     df.loc[id_sub,'rad_shortwave_down_CNR4'] = np.nan
     df.loc[id_sub,'rad_longwave_down_CNR4'] = np.nan
 
-    # Filter erroneous albedo
+    # Compute 2-day (daytime) rolling mean mean albedo
     id_albedo = (df['rad_shortwave_down_CNR4'] > 25) & \
         (df['rad_shortwave_down_CNR4'] > df['rad_shortwave_up_CNR4'])
-
     df.loc[id_albedo,'rolling_albedo'] = \
         df.loc[id_albedo,'rad_shortwave_up_CNR4'].rolling(
             window=48*2,min_periods=12,center=True).median() \
             / df.loc[id_albedo,'rad_shortwave_down_CNR4'].rolling(
                 window=48*2,min_periods=12,center=True).median()
-
     df['rolling_albedo'] = df['rolling_albedo'].interpolate()
+
+    # Cap downward shortwave with rolling albedo and upward shortwave
+    # (minimize the artifacts du to low angle sun rays in early morning and
+    # late evenings)
     id_sub = (df['rad_shortwave_up_CNR4'] >
               (0.90 * df['rad_shortwave_down_CNR4']))
     df.loc[id_sub,'rad_shortwave_up_CNR4'] = \
         df.loc[id_sub,'rad_shortwave_down_CNR4'] * \
             df.loc[id_sub,'rolling_albedo']
-    df=df.drop(columns=['rolling_albedo'])
+    df = df.drop(columns=['rolling_albedo'])
 
     # Recompute albedo
     id_daylight = df['rad_shortwave_down_CNR4'] > 25
@@ -377,8 +444,39 @@ def remove_flux_and_storage(df,var,id_rm):
     return df
 
 
+def run_aquatic_friction_velocity_threshold(df, flux_var):
+    """
+    Return the index for which the friction velocity threshold criteron for
+    water bodes is not met (u∗ > 0.05 m.s−1). According to:
+    Lükő, G., Torma, P., Krámer, T., Weidinger, T., Vecenaj, Z., and
+    Grisogono, B.: Observation of wave-driven air–water turbulent momentum
+    exchange in a large but fetch-limited shallow lake, Adv. Sci. Res., 17,
+    175–182, https://doi.org/10.5194/asr-17-175-2020, 2020.
+
+
+    Parameters
+    ----------
+    df: pandas DataFrame that contains the flux variable
+    flux_var: string that designate the flux variable
+
+    Returns
+    id_below_fvt: index of fluxes below friction velocity threshold"""
+
+    # Remove daytime and NaN
+    index_below_fvt = (
+        (df['daytime'] == 0) &
+        ~df[flux_var].isna() &
+        ~df['friction_velocity'].isna() &
+        (df['friction_velocity'] < 0.05)
+        )
+    fvt_series = pd.Series([np.nan] * len(df), index=df.index)
+    fvt_series[index_below_fvt] = 0.05
+    return index_below_fvt, fvt_series
+
+
 def run_friction_velocity_threshold(df, flux_var, air_temp_var, fvt_values=False):
-    """Compute friction velocity threshold per season with bootstrap
+    """Compute friction velocity threshold per season with bootstrap for land
+    surfaces and returns index for which the threshold is not attained.
 
     Parameters
     ----------
@@ -399,7 +497,7 @@ def run_friction_velocity_threshold(df, flux_var, air_temp_var, fvt_values=False
     fvt = seasonal_friction_vel_threshold(df.loc[mask], flux_var, air_temp_var)
 
     # Get all seasonal indexes to one single array of boolean
-    index_below_fvt = pd.Series([False] * len(df))
+    index_below_fvt = pd.Series([False] * len(df), index=df.index)
     for s in fvt:
         if fvt[s]['fvt']:
             index_below_fvt[fvt[s]['id_below_fvt'].index] = \
@@ -409,11 +507,11 @@ def run_friction_velocity_threshold(df, flux_var, air_temp_var, fvt_values=False
         return index_below_fvt
 
     # Produce a time series containing friction velocity thresholds
-    fvt_series = pd.Series([np.nan] * len(df))
+    fvt_series = pd.Series([np.nan] * len(df), index=df.index)
     for s in fvt:
         if fvt[s]['fvt']:
             index_season = df[
-                df['timestamp'].dt.month.isin( fvt[s]['months'] )].index
+                df.index.month.isin( fvt[s]['months'] )].index
             fvt_series[index_season] = fvt[s]['fvt']
 
     return index_below_fvt, fvt_series
@@ -452,7 +550,7 @@ def seasonal_friction_vel_threshold(df, flux_var, air_temp_var):
 
     for s in seasonal_fvt:
         # Select months
-        index_season = df['timestamp'].dt.month.isin(seasonal_fvt[s]['months'])
+        index_season = df.index.month.isin(seasonal_fvt[s]['months'])
 
         if sum(index_season) > 20*6*2:
             seasonal_fvt[s]['fvt'], seasonal_fvt[s]['fvt_ci'] = \

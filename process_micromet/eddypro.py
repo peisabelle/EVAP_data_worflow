@@ -34,7 +34,7 @@ def run(station_name,ascii_dir,eddypro_config_dir,eddypro_out_dir,dates):
 
     # Check if there are existing EddyPro files and load the newest
     # Overwrite the starting date to run only the necessary
-    output_list = glob(eddypro_out_dir+'/'+station_name+'\*full_output*.csv')
+    output_list = glob(eddypro_out_dir+'/'+station_name+'/*full_output*.csv')
     output_list = [sub.replace('\\', '/') for sub in output_list]
 
     if output_list:
@@ -60,7 +60,7 @@ def run(station_name,ascii_dir,eddypro_config_dir,eddypro_out_dir,dates):
 
     # Fill a EddyPro config dataframe
     for count, i_config in enumerate(config_list):
-        matching_str = re.findall('\d{8}_\d{4}', i_config)
+        matching_str = re.findall(r'\d{8}_\d{4}', i_config)
         if matching_str:
             eddypro_configs.loc[count, 'end'] = pd.to_datetime(
                matching_str[0],format='%Y%m%d_%H%M')
@@ -216,52 +216,9 @@ def run(station_name,ascii_dir,eddypro_config_dir,eddypro_out_dir,dates):
                 else:
                     print(line,end='')
 
-        process=os.path.join(".\Bin","EddyPro","bin","eddypro_rp.exe")
+        process=os.path.join("./Bin","EddyPro","bin","eddypro_rp.exe")
         subprocess.call([process, station_config])
 
     print('Done!')
 
 
-def merge(station_name,eddypro_out_dir,dates):
-    """Load and merge the EddyPro output files found in source directory
-
-    Parameters
-    ----------
-    station_name: name of the station
-    inputDir: path of the directory that contains the EddyPro output files
-
-    Returns
-    -------
-    df: a nice and tidy pandas DataFrame
-    """
-    print('Start merging Eddy Pro file for station:', station_name, '...', end='\r')
-
-    # Initialize dataframe
-    df = pd.DataFrame(
-        index=pd.date_range(start=dates['start'], end=dates['end'], freq='30min')
-        )
-
-    # List eddy pro output files and select most recent one
-    output_list = glob(eddypro_out_dir+'/'+station_name+'/'+'\*full_output*.csv')
-
-    # Fill dataframe
-    for i_file in output_list:
-
-        df_tmp = pd.read_csv(i_file,skiprows=[0,2])
-
-        # Create a standardized time column
-        df_tmp['TIMESTAMP'] = pd.to_datetime(
-            df_tmp['date'].map(str) + " " + df_tmp['time'].map(str),
-            yearfirst=True)
-        df_tmp.index = df_tmp['TIMESTAMP']
-
-        idDates_RecInRef = df_tmp.index.isin(df.index)
-        idDates_RefInRec = df.index.isin(df_tmp.index)
-        df.loc[idDates_RefInRec,df_tmp.columns] = \
-            df_tmp.loc[df_tmp.index[idDates_RecInRef],df_tmp.columns]
-
-    df['TIMESTAMP'] = df.index
-
-    print('Done!')
-
-    return df
