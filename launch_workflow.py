@@ -37,7 +37,7 @@ filterConfigDir     = "./Config/Filtering/"
 gasAnalyzerConfigDir    = "./Config/Gas_analyzer/"
 reanalysisConfigDir = "./Config/Reanalysis/"
 
-dates = {'start':'2018-06-25','end':'2022-10-01'}
+dates = {'start':'2015-10-22','end':'2017-01-01'}
 
 # Merge Hobo TidBit thermistors
 # df1 = pm.thermistors.list_merge_filter('Romaine-2_reservoir_thermistor_chain-1', dates, rawFileDir)
@@ -52,10 +52,10 @@ dates = {'start':'2018-06-25','end':'2022-10-01'}
 # pm.thermistors.save(df,'Bernard_lake_thermistor_chain', finalOutDir)
 
 # Merge governmental stations (ECCC - Foret Montmorency and MELCC - Foret Montmorency)
-pm.merge_fm_eccc_melcc(dates,miscDataDir,intermediateOutDir)
+#pm.merge_fm_eccc_melcc(dates,miscDataDir,intermediateOutDir)
 
 # Merge Geonor stations (Juvenile)
-pm.merge_geonor(dates,miscDataDir,intermediateOutDir)
+#pm.merge_geonor(dates,miscDataDir,intermediateOutDir)
 
 
 # Perform ERA5 extraction and handling
@@ -69,88 +69,89 @@ for iStation in CampbellStations:
     # Binary to ascii
     pm.convert_CSbinary_to_csv(station_name_conversion[iStation],iStation,
                                rawFileDir,asciiOutDir)
+
     # Correct raw concentrations
-    if iStation in eddyCovStations:
-        pm.correct_raw_concentrations(iStation,asciiOutDir,gasAnalyzerConfigDir,False)
+    # if iStation in eddyCovStations:
+    #     pm.correct_raw_concentrations(iStation,asciiOutDir,gasAnalyzerConfigDir,False)
     # Rotate wind
-    if iStation == 'Reservoir':
-        pm.rotate_wind(iStation,asciiOutDir)
-    # List slow files
-    slow_files = dfm.list_files(iStation, '*slow.csv', asciiOutDir)
-    # Create reference dataframe and merge slow files
-    df = dfm.create(dates)
-    df = dfm.merge_files(df,slow_files,'TOA5')
-    # Rename and trim slow variables
-    df = pm.rename_trim_vars(iStation,varNameExcelSheet,df,'cs')
+    # if iStation == 'Reservoir':
+    #     pm.rotate_wind(iStation,asciiOutDir)
+    # # List slow files
+    # slow_files = dfm.list_files(iStation, '*slow.csv', asciiOutDir)
+    # # Create reference dataframe and merge slow files
+    # df = dfm.create(dates)
+    # df = dfm.merge_files(df,slow_files,'TOA5')
+    # # Rename and trim slow variables
+    # df = pm.rename_trim_vars(iStation,varNameExcelSheet,df,'cs')
 
-    if iStation in eddyCovStations:
-        # Ascii to eddypro
-        pm.eddypro.run(iStation,asciiOutDir,eddyproConfigDir,
-                       eddyproOutDir,dates)
-        # List EddyPro files
-        eddypro_files = dfm.list_files(iStation, '*full_output*.csv', eddyproOutDir)
-        # Create reference dataframe and merge EddyPro files
-        eddy_df = dfm.create(dates)
-        eddy_df = dfm.merge_files(eddy_df,eddypro_files,'EddyPro')
-        # Rename and trim eddy variables
-        eddy_df = pm.rename_trim_vars(iStation,varNameExcelSheet,
-                                      eddy_df,'eddypro')
-        # Merge slow and eddy data
-        df = dfm.merge(df,eddy_df)
+#     if iStation in eddyCovStations:
+#         # Ascii to eddypro
+#         pm.eddypro.run(iStation,asciiOutDir,eddyproConfigDir,
+#                        eddyproOutDir,dates)
+#         # List EddyPro files
+#         eddypro_files = dfm.list_files(iStation, '*full_output*.csv', eddyproOutDir)
+#         # Create reference dataframe and merge EddyPro files
+#         eddy_df = dfm.create(dates)
+#         eddy_df = dfm.merge_files(eddy_df,eddypro_files,'EddyPro')
+#         # Rename and trim eddy variables
+#         eddy_df = pm.rename_trim_vars(iStation,varNameExcelSheet,
+#                                       eddy_df,'eddypro')
+#         # Merge slow and eddy data
+#         df = dfm.merge(df,eddy_df)
 
-    dfm.save(df,intermediateOutDir,iStation)
-
-
-for iStation in CampbellStations:
-    # Load csv
-    df = dl.csv(intermediateOutDir+iStation)
-    # Handle exceptions
-    df = pm.handle_exception(iStation,df)
-    # Filter data
-    df = pm.filters.apply_all(iStation,df,filterConfigDir,intermediateOutDir)
-    # Save to csv
-    dfm.save(df,finalOutDir,iStation)
-    # Format reanalysis data
-    pm.reanalysis.netcdf_to_dataframe(dates,iStation,filterConfigDir,
-                                      reanalysisDir,intermediateOutDir)
+#     dfm.save(df,intermediateOutDir,iStation)
 
 
-for iStation in gapfilledStation:
-    # Merge the eddy covariance together (water/forest)
-    df = pm.merge_eddycov_stations(iStation,rawFileDir,
-                                   finalOutDir, miscDataDir, varNameExcelSheet)
-
-    # Format reanalysis data for gapfilling
-    pm.reanalysis.netcdf_to_dataframe(dates,iStation,filterConfigDir,
-                                      reanalysisDir,intermediateOutDir)
-
-    # Perform gap filling
-    df = pm.gap_fill_slow_data.gap_fill_meteo(
-        iStation,df,intermediateOutDir,gapfillConfigDir)
-    df = pm.gap_fill_slow_data.gap_fill_radiation(
-        iStation,df,intermediateOutDir,gapfillConfigDir)
-    df = pm.gap_fill_slow_data.custom_operation(
-        iStation,df,gapfillConfigDir)
-    df = pm.gap_fill_flux.gap_fill_flux(iStation,df,gapfillConfigDir)
-
-    # Compute storage terms
-    df = pm.compute_storage_flux(iStation,df)
-
-    if iStation == 'Forest_stations':
-        # Correct for energy balance
-        df = pm.correct_energy_balance(df)
-
-        # Filter data
-        df = pm.filters.apply_all(iStation,df,filterConfigDir,finalOutDir)
-
-        # Perform gap filling
-        df = pm.gap_fill_flux.gap_fill_flux(iStation,df,gapfillConfigDir)
-
-    # Save to csv
-    dfm.save(df,finalOutDir,iStation)
+# for iStation in CampbellStations:
+#     # Load csv
+#     df = dl.csv(intermediateOutDir+iStation)
+#     # Handle exceptions
+#     df = pm.handle_exception(iStation,df)
+#     # Filter data
+#     df = pm.filters.apply_all(iStation,df,filterConfigDir,intermediateOutDir)
+#     # Save to csv
+#     dfm.save(df,finalOutDir,iStation)
+#     # Format reanalysis data
+#     pm.reanalysis.netcdf_to_dataframe(dates,iStation,filterConfigDir,
+#                                       reanalysisDir,intermediateOutDir)
 
 
-for iStation in eddyCovStations:
-    df = pd.read_csv(finalOutDir+iStation+'.csv')
-    fp = pm.footprint.compute(df)
-    pm.footprint.dump(iStation,fp,finalOutDir)
+# for iStation in gapfilledStation:
+#     # Merge the eddy covariance together (water/forest)
+#     df = pm.merge_eddycov_stations(iStation,rawFileDir,
+#                                    finalOutDir, miscDataDir, varNameExcelSheet)
+
+#     # Format reanalysis data for gapfilling
+#     pm.reanalysis.netcdf_to_dataframe(dates,iStation,filterConfigDir,
+#                                       reanalysisDir,intermediateOutDir)
+
+#     # Perform gap filling
+#     df = pm.gap_fill_slow_data.gap_fill_meteo(
+#         iStation,df,intermediateOutDir,gapfillConfigDir)
+#     df = pm.gap_fill_slow_data.gap_fill_radiation(
+#         iStation,df,intermediateOutDir,gapfillConfigDir)
+#     df = pm.gap_fill_slow_data.custom_operation(
+#         iStation,df,gapfillConfigDir)
+#     df = pm.gap_fill_flux.gap_fill_flux(iStation,df,gapfillConfigDir)
+
+#     # Compute storage terms
+#     df = pm.compute_storage_flux(iStation,df)
+
+#     if iStation == 'Forest_stations':
+#         # Correct for energy balance
+#         df = pm.correct_energy_balance(df)
+
+#         # Filter data
+#         df = pm.filters.apply_all(iStation,df,filterConfigDir,finalOutDir)
+
+#         # Perform gap filling
+#         df = pm.gap_fill_flux.gap_fill_flux(iStation,df,gapfillConfigDir)
+
+#     # Save to csv
+#     dfm.save(df,finalOutDir,iStation)
+
+
+# for iStation in eddyCovStations:
+#     df = pd.read_csv(finalOutDir+iStation+'.csv')
+#     fp = pm.footprint.compute(df)
+#     pm.footprint.dump(iStation,fp,finalOutDir)
