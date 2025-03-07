@@ -52,10 +52,10 @@ dates = {'start':'2015-10-22','end':'2017-01-01'}
 
 
 # Perform ERA5 extraction and handling
-for iStation in gapfilledStation:
-    reanalysis_config = dl.yaml_file(reanalysisConfigDir, iStation)
-    pm.reanalysis.retrieve( reanalysis_config['era5-land'], dates, reanalysisDir)
-    pm.reanalysis.retrieve( reanalysis_config['era5'], dates, reanalysisDir)
+# for iStation in gapfilledStation:
+#     reanalysis_config = dl.yaml_file(reanalysisConfigDir, iStation)
+#     pm.reanalysis.retrieve( reanalysis_config['era5-land'], dates, reanalysisDir)
+#     pm.reanalysis.retrieve( reanalysis_config['era5'], dates, reanalysisDir)
 
 for iStation in CampbellStations:
 
