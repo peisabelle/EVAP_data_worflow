@@ -1,29 +1,35 @@
-import process_micromet as pm
 from utils import data_loader as dl, dataframe_manager as dfm
 import pandas as pd
 
+import os
+
+### Working directory
+
+os.chdir("C:/Users/peisa/Documents/Github/EVAP_data_worflow")
+
+import process_micromet as pm
+
 ### Define paths
 
-CampbellStations =  ["Berge","Berge_precip","Foret_ouest","Foret_est","Foret_sol","Foret_precip","Reservoir","Bernard_lake"]
-eddyCovStations =   ["Berge","Foret_ouest","Foret_est","Reservoir","Bernard_lake"]
-gapfilledStation =  ["Bernard_lake","Water_stations","Forest_stations"]
+CampbellStations =  ["Juvenile_NO","Juvenile_SE","Juvenile_Sol","Sapling","Sapling_Sol","Regeneration","Regeneration_CPEC","Canopy","Neige"]
+eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Regeneration","Regeneration_CPEC","Canopy","Neige"]
+gapfilledStation =  ["Juvenile","Sapling","Regeneration","Neige"]
 
-station_name_conversion = {'Berge': 'Romaine-2_reservoir_shore',
-                           'Berge_precip': 'Romaine-2_reservoir_shore_precip',
-                           'Foret_ouest': 'Bernard_spruce_moss_west',
-                           'Foret_est': 'Bernard_spruce_moss_east',
-                           'Foret_sol': 'Bernard_spruce_moss_ground',
-                           'Foret_precip': 'Bernard_spruce_moss_precip',
-                           'Reservoir': 'Romaine-2_reservoir_raft',
-                           'Bernard_lake': 'Bernard_lake'}
+station_name_conversion = {'Juvenile_NO': 'Juvenile_NO',
+                           'Juvenile_SE': 'Juvenile_SE',
+                           'Sapling': 'Sapling',
+                           'Regeneration': 'Regeneration',
+                           'Regeneration_CPEC': 'Regeneration_CPEC',
+                           'Canopy': 'Canopy',
+                           'Neige': 'Neige'}
 
-rawFileDir          = "D:/Ro2_micromet_raw_data/Data/"
-reanalysisDir       = "D:/Ro2_micromet_raw_data/Data/Reanalysis/"
-asciiOutDir         = "D:/Ro2_micromet_processed_data/Ascii_data/"
-eddyproOutDir       = "D:/Ro2_micromet_processed_data/Eddypro_data/"
-miscDataDir         = "D:/Ro2_micromet_raw_data/Data/Misc/"
-intermediateOutDir  = "D:/Ro2_micromet_processed_data/Intermediate_output/"
-finalOutDir         = "D:/Ro2_micromet_processed_data/Final_output/"
+rawFileDir          = "F:/peisa/FM_Hydromet/Raw_Data/Binary/"
+reanalysisDir       = "F:/peisa/FM_Hydromet/Raw_Data/Reanalysis/"
+asciiOutDir         = "F:/peisa/FM_Hydromet/Raw_Data/CSV/"
+eddyproOutDir       = "F:/peisa/FM_Hydromet/EddyPro/"
+miscDataDir         = "F:/peisa/FM_Hydromet/Raw_Data/Misc/"
+intermediateOutDir  = "F:/peisa/FM_Hydromet/Processed_Data/Intermediate/"
+finalOutDir         = "F:/peisa/FM_Hydromet/Processed_Data/Final/"
 varNameExcelSheet   = "./Resources/Variable_description_full.xlsx"
 eddyproConfigDir    = "./Config/EddyProConfig/"
 gapfillConfigDir    = "./Config/GapFillingConfig/"
@@ -33,18 +39,25 @@ reanalysisConfigDir = "./Config/Reanalysis/"
 
 dates = {'start':'2018-06-25','end':'2022-10-01'}
 
-
 # Merge Hobo TidBit thermistors
-df1 = pm.thermistors.list_merge_filter('Romaine-2_reservoir_thermistor_chain-1', dates, rawFileDir)
-pm.thermistors.save(df1,'Romaine-2_reservoir_thermistor_chain-1', finalOutDir)
-df2 = pm.thermistors.list_merge_filter('Romaine-2_reservoir_thermistor_chain-2', dates, rawFileDir)
-pm.thermistors.save(df2,'Romaine-2_reservoir_thermistor_chain-2', finalOutDir)
-df = pm.thermistors.average(df1, df2)
-df = pm.thermistors.gap_fill(df)
-pm.thermistors.save(df,'Romaine-2_reservoir_thermistor_chain', finalOutDir)
-df = pm.thermistors.list_merge_filter('Bernard_lake_thermistor_chain', dates, rawFileDir)
-df = pm.thermistors.gap_fill(df)
-pm.thermistors.save(df,'Bernard_lake_thermistor_chain', finalOutDir)
+# df1 = pm.thermistors.list_merge_filter('Romaine-2_reservoir_thermistor_chain-1', dates, rawFileDir)
+# pm.thermistors.save(df1,'Romaine-2_reservoir_thermistor_chain-1', finalOutDir)
+# df2 = pm.thermistors.list_merge_filter('Romaine-2_reservoir_thermistor_chain-2', dates, rawFileDir)
+# pm.thermistors.save(df2,'Romaine-2_reservoir_thermistor_chain-2', finalOutDir)
+# df = pm.thermistors.average(df1, df2)
+# df = pm.thermistors.gap_fill(df)
+# pm.thermistors.save(df,'Romaine-2_reservoir_thermistor_chain', finalOutDir)
+# df = pm.thermistors.list_merge_filter('Bernard_lake_thermistor_chain', dates, rawFileDir)
+# df = pm.thermistors.gap_fill(df)
+# pm.thermistors.save(df,'Bernard_lake_thermistor_chain', finalOutDir)
+
+# Merge governmental stations (ECCC - Foret Montmorency and MELCC - Foret Montmorency)
+pm.merge_fm_eccc_melcc(dates,miscDataDir,intermediateOutDir)
+
+# Merge Geonor stations (Juvenile)
+pm.merge_geonor(dates,miscDataDir,intermediateOutDir)
+
+
 # Perform ERA5 extraction and handling
 for iStation in gapfilledStation:
     reanalysis_config = dl.yaml_file(reanalysisConfigDir, iStation)
