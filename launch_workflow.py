@@ -1,13 +1,6 @@
+import process_micromet as pm
 from utils import data_loader as dl, dataframe_manager as dfm
 import pandas as pd
-
-import os
-
-### Working directory
-
-os.chdir("C:/Users/peisa/Documents/Github/EVAP_data_worflow")
-
-import process_micromet as pm
 
 ### Define paths
 
