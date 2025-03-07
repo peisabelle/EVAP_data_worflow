@@ -73,15 +73,15 @@ def convert_CSbinary_to_csv(station_name_raw, station_name_ascii,
 
                     try:
                         # File type name handling
-                        if bool(re.search("ts_data_",rawFile)) | bool(re.search("_Time_Series_",rawFile)):
+                        if bool(re.search("ts_data_",rawFile)) | bool(re.search("_Time_Series_",rawFile)) | bool(re.search("Time_Series_",rawFile)):
                             extension="_eddy.csv"
                         elif bool(re.search("alerte",rawFile)):
                             extension="_alert.csv"
-                        elif bool(re.search("_Flux_CSIFormat_",rawFile)) | bool(re.search("flux",rawFile)) | bool(re.search("data_",rawFile)):
+                        elif bool(re.search("_Flux_CSIFormat_",rawFile)) | bool(re.search("_Flux_CSFormat_",rawFile)) | bool(re.search("flux",rawFile)) | bool(re.search("data_",rawFile)) | bool(re.search("_Slow_met_",rawFile)):
                             extension="_slow.csv"
-                        elif bool(re.search("radiation",rawFile)) | bool(re.search("_Flux_Notes_",rawFile)):
+                        elif bool(re.search("radiation",rawFile)) | bool(re.search("_Flux_Notes_",rawFile)) | bool(re.search("MetData",rawFile)):
                             extension="_slow2.csv"
-                        elif bool(re.search("met30min",rawFile)):
+                        elif bool(re.search("met30min",rawFile)) | bool(re.search("house_",rawFile)):
                             extension="_slow3.csv"
                         else:                           # .cr1 / .cr3 / sys_log files / Config_Setting_Notes / Flux_AmeriFluxFormat_12
                             shutil.copy(inFile,outFile)
