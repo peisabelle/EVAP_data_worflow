@@ -10,7 +10,9 @@ gapfilledStation =  ["Juvenile","Sapling","Regeneration","Neige"]
 
 station_name_conversion = {'Juvenile_NO': 'Juvenile_NO',
                            'Juvenile_SE': 'Juvenile_SE',
+                           'Juvenile_Sol': 'Juvenile_Sol',
                            'Sapling': 'Sapling',
+                           'Sapling_Sol': 'Sapling_Sol',
                            'Regeneration': 'Regeneration',
                            'Regeneration_CPEC': 'Regeneration_CPEC',
                            'Canopy': 'Canopy',
