@@ -73,7 +73,7 @@ def convert_CSbinary_to_csv(station_name_raw, station_name_ascii,
 
                     try:
                         # File type name handling
-                        if bool(re.search("ts_data_",rawFile)) | bool(re.search("_Time_Series_",rawFile)) | bool(re.search("Time_Series_",rawFile)):
+                        if bool(re.search("ts_data",rawFile)) | bool(re.search("_Time_Series_",rawFile)) | bool(re.search("Time_Series_",rawFile)):
                             extension="_eddy.csv"
                         elif bool(re.search("alerte",rawFile)):
                             extension="_alert.csv"
