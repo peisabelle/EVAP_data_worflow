@@ -111,7 +111,7 @@ def convert_CSbinary_to_csv(station_name_raw, station_name_ascii,
 
                             # Write splitted files
                             for i in index:
-                                if i[1]-i[0] != 18000:
+                                if i[1]-i[0] < 11000:
                                     # Save the output file in the incomplete folder if the series contains
                                     # less than 18000 records (full 30 min @ 10Hz)
                                     file_name = os.path.join(
