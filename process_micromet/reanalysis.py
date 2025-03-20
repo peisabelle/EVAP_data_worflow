@@ -38,7 +38,7 @@ def make_api_request(config, ymd, delay):
 
     if not path.isfile(export_name):
         cds = cdsapi.Client()
-        time.sleep((delay%10)/2)
+        time.sleep(delay%10)
         cds.retrieve(config['dataset']['name'],
                     {'variable': config['variables'],
                      'product_type': config['dataset']['product_type'],
