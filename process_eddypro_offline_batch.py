@@ -5,16 +5,17 @@ Created on Mon Mar  8 10:26:26 2021
 @author: peisa
 """
 
-import pandas as pd
 import process_micromet as pm
+from utils import data_loader as dl, dataframe_manager as dfm
+import pandas as pd
 
 ### Define paths
 
-eddyCovStations = ["Juvenile_NO","Juvenile_SE","Sapling"]
+eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Regeneration","Regeneration_CPEC","Canopy","Neige"]
 
-asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
-eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
-eddyproConfigDir    = "./Config/EddyProConfig/No_Filter/"
+asciiOutDir         = "F:/peisa/FM_Hydromet/Raw_Data/CSV/"
+eddyproOutDir       = "F:/peisa/FM_Hydromet/EddyPro/"
+eddyproConfigDir    = "./Config/EddyProConfig/"
 
 ### Process eddy covariance stations - Batch process EddyPro
 
