@@ -96,7 +96,7 @@ def run(station_name,ascii_dir,eddypro_config_dir,eddypro_out_dir,dates):
         station_out_dir     = eddypro_out_dir + station_name
         station_config      = eddypro_configs.loc[i_config,'path'] + '.eddypro'
         station_metadata    = eddypro_configs.loc[i_config,'path'] + '.metadata'
-        station_ascii_dir   = ascii_dir + station_name + 'ts_data'
+        station_ascii_dir   = ascii_dir + station_name + '/ts_data'
 
         # Read in the Eddy Pro config file and replace target strings
         with fileinput.FileInput(station_config, inplace=True) as file:

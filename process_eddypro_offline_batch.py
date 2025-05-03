@@ -13,8 +13,8 @@ import pandas as pd
 
 eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Regeneration","Regeneration_CPEC","Canopy","Neige"]
 
-asciiOutDir         = "F:/peisa/FM_Hydromet/Raw_Data/CSV/"
-eddyproOutDir       = "F:/peisa/FM_Hydromet/EddyPro/"
+asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
+eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
 eddyproConfigDir    = "./Config/EddyProConfig/"
 
 ### Process eddy covariance stations - Batch process EddyPro

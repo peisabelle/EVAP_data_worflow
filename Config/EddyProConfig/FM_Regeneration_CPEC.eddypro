@@ -50,7 +50,7 @@ lf_meth=1
 wpl_meth=1
 foot_meth=1
 tob1_format=0
-out_path=F:/peisa/FM_Hydromet/EddyPro/Regeneration_CPEC
+out_path=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Regeneration_CPEC
 fix_out_format=0
 err_label=NaN
 qc_meth=1
@@ -130,7 +130,7 @@ sa_gas4_g1_start=1
 sa_gas4_g1_stop=12
 
 [RawProcess_General]
-data_path=F:/peisa/FM_Hydromet/Raw_Data/CSV/Regeneration_CPEC
+data_path=F:/peisa/FM_Hydromet/Raw_Data/CSV/Regeneration_CPEC/ts_data
 recurse=0
 use_geo_north=0
 mag_dec=0
