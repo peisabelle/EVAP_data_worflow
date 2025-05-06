@@ -101,7 +101,7 @@ sa_min_st_le=3.0000
 sa_min_st_h=5.0000
 add_sonic_lptf=1
 horst_lens=2
-ex_file=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Juvenile_SE/eddypro_Juvenile_SE_fluxnet_2023-11-14T033357_adv.csv
+ex_file=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Juvenile_SE/eddypro_FM_Juvenile_SE_fluxnet_2025-05-03T125605_adv.csv
 sa_bin_spectra=
 sa_full_spectra=
 ex_dir=
@@ -130,7 +130,7 @@ sa_gas4_g1_start=1
 sa_gas4_g1_stop=12
 
 [RawProcess_General]
-data_path=F:/peisa/FM_Hydromet/Raw_Data/CSV/Juvenile_SE/ts_data
+data_path=E:/EVAP/Data_EVAP/Raw_Data/ASCII/Juvenile_SE/ts_data
 recurse=0
 use_geo_north=0
 mag_dec=0

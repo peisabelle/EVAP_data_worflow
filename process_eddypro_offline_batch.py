@@ -11,7 +11,7 @@ import pandas as pd
 
 ### Define paths
 
-eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Regeneration","Regeneration_CPEC","Canopy","Neige"]
+eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Regeneration","Regeneration_CPEC","Neige"]
 
 asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
 eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
