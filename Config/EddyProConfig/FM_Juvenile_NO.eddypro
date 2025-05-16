@@ -41,9 +41,9 @@ out_rich=1
 out_metadata=1
 make_dataset=1
 pr_subset=1
-pr_start_date=2024-04-10
+pr_start_date=2025-04-02
 pr_start_time=00:00
-pr_end_date=2025-04-02
+pr_end_date=2025-05-14
 pr_end_time=00:00
 hf_meth=1
 lf_meth=1
@@ -75,8 +75,8 @@ ru_its_meth=0
 ru_tlag_max=10.0
 
 [FluxCorrection_SpectralAnalysis_General]
-sa_start_date=2024-04-10
-sa_end_date=2025-04-02
+sa_start_date=2025-04-02
+sa_end_date=2025-05-14
 sa_start_time=00:00
 sa_end_time=00:00
 sa_mode=1
@@ -340,8 +340,8 @@ aa_lim=10.0
 ns_hf_lim=0.5
 
 [RawProcess_TiltCorrection_Settings]
-pf_start_date=2024-04-10
-pf_end_date=2025-04-02
+pf_start_date=2025-04-02
+pf_end_date=2025-05-14
 pf_start_time=00:00
 pf_end_time=00:00
 pf_mode=1

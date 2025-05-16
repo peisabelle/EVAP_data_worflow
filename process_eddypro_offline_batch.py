@@ -19,7 +19,7 @@ eddyproConfigDir    = "./Config/EddyProConfig/"
 
 ### Process eddy covariance stations - Batch process EddyPro
 
-dates = {'start': '2024-04-10', 'end': '2025-04-02'}
+dates = {'start': '2025-04-02', 'end': '2025-05-14'}
 
 # # Loop over stations
 for iStation in eddyCovStations:
