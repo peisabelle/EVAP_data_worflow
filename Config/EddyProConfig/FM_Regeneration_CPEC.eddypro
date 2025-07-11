@@ -2,7 +2,7 @@
 [Project]
 creation_date=2015-11-23T10:05:36
 last_change_date=2025-07-11T14:36:09
-file_name=C:/Users/peisa/Documents/GitHub/EVAP_data_worflow/Config/EddyProConfig/FM_Regeneration_CPEC.eddypro
+file_name=./Config/EddyProConfig/FM_Regeneration_CPEC.eddypro
 run_mode=0
 run_fcc=0
 project_title=FM_Regeneration_CPEC
@@ -12,7 +12,7 @@ project_id=FM_Regeneration_CPEC
 file_type=1
 file_prototype=Regeneration_CPEC_ts_yyyy_mm_dd_HHMM.dat
 use_pfile=1
-proj_file=C:/Users/peisa/Documents/GitHub/EVAP_data_worflow/Config/EddyProConfig/FM_Regeneration_CPEC.metadata
+proj_file=./Config/EddyProConfig/FM_Regeneration_CPEC.metadata
 use_dyn_md_file=0
 dyn_metadata_file=
 binary_hnlines=-1
@@ -41,7 +41,7 @@ out_rich=1
 out_metadata=1
 make_dataset=1
 pr_subset=1
-pr_start_date=2025-04-02
+pr_start_date=2023-11-02
 pr_start_time=00:00
 pr_end_date=2025-05-14
 pr_end_time=00:00
@@ -50,7 +50,7 @@ lf_meth=1
 wpl_meth=1
 foot_meth=1
 tob1_format=0
-out_path=
+out_path=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Regeneration_CPEC
 fix_out_format=0
 err_label=NaN
 qc_meth=1
@@ -75,7 +75,7 @@ ru_its_meth=0
 ru_tlag_max=10.0
 
 [FluxCorrection_SpectralAnalysis_General]
-sa_start_date=2025-04-02
+sa_start_date=2023-11-02
 sa_end_date=2025-05-14
 sa_start_time=00:00
 sa_end_time=00:00
@@ -130,7 +130,7 @@ sa_gas4_g1_start=1
 sa_gas4_g1_stop=12
 
 [RawProcess_General]
-data_path=
+data_path=E:/EVAP/Data_EVAP/Raw_Data/ASCII/Regeneration_CPEC/ts_data
 recurse=0
 use_geo_north=0
 mag_dec=0
@@ -340,7 +340,7 @@ aa_lim=10.0
 ns_hf_lim=0.5
 
 [RawProcess_TiltCorrection_Settings]
-pf_start_date=2025-04-02
+pf_start_date=2023-11-02
 pf_end_date=2025-05-14
 pf_start_time=00:00
 pf_end_time=00:00
