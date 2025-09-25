@@ -7,6 +7,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn import linear_model
 from process_micromet import ml_utils as ml
+from utils import data_loader as dl
 
 
 
@@ -97,15 +98,27 @@ def merge(dates, csv_files):
                           'Could not process the file.')
             continue
 
-        # Get the number of rows to skip
+        # Get the number of rows to skip and check if there is a record number column
         with open(file, 'r', encoding='utf-8') as f:
             for l, line in enumerate(f, start=1):
                 if any(keyword in line.lower() for keyword in ['date', 'day']):
                     skiprows = range(0,l-1)
+
+                    # Split line into columns
+                    parts = line.strip().split(',')
+
+                    # Find index of the first column that contains 'date' or 'day'
+                    for i, col in enumerate(parts):
+                        if 'date' in col.lower() or 'day' in col.lower():
+                            date_col = i
+                            break
                     break
 
         # Load data file
         df_tmp = pd.read_csv(file, skiprows=skiprows)
+
+        # Remove record number column if any
+        df_tmp = df_tmp.iloc[:,date_col:]
 
         # Convert first col to datetime format and the rest to float
         df_tmp.index = pd.to_datetime(df_tmp.iloc[:,0])
@@ -126,7 +139,7 @@ def merge(dates, csv_files):
                     df_tmp.loc[idDates_RecInRef, col]
                 store_retrieval_dates(f'water_temp_{depth_string}')
 
-            if 'intensity' in col.lower():
+            if ('intensity' in col.lower()) or ('light' in col.lower()):
                 df.loc[idDates_RefInRec, f'light_intensity_{depth_string}'] = \
                     df_tmp.loc[idDates_RecInRef, col]
                 store_retrieval_dates(f'light_intensity_{depth_string}')
@@ -404,6 +417,81 @@ def gap_fill(df):
 
         # Last hope interpolation
         df[depths] = df[depths].interpolate(method='linear')
+
+    return df
+
+def add_ice_phenology(df, phenology_file):
+    """
+    Add ice phenology dates to dataframe as a new column 'water_frozen_sfc'
+    where 1 indicates frozen surface, 0 open water
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        Dataframe to which ice phenology dates are added
+    phenology_file : String or pathlib.Path
+        Path to a ice phenology csv file
+
+    Returns
+    -------
+    df : Pandas dataframe
+        Dataframe that include ice phenology dates
+    """
+
+    df_icepheno = dl.ice_phenology(phenology_file)
+    df['water_frozen_sfc'] = np.zeros((df.shape[0]))
+    for index_df in df_icepheno.index:
+        s = pd.to_datetime(df_icepheno.loc[index_df,'Freezeup'])
+        e = pd.to_datetime(df_icepheno.loc[index_df,'Icemelt'])
+        df.loc[s:e,'water_frozen_sfc'] = 1
+    return df
+
+
+def compute_energy_storage(df):
+    """
+    Compute energy storage in the water column in J/m2, between the surface up to the
+    deepest temperature sensor and add it to the dataframe (Hw).
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        Pandas dataframe that contain water temperature formated as
+        water_temp_XmY where XmY is the depth
+
+    Returns
+    -------
+    df : Pandas dataframe
+        Pandas dataframe to which the column Hw is added.
+
+    """
+
+    # Get the measurement depths
+    depth_string = np.array([d for d in df.columns if 'water_temp' in d])
+    pattern = re.compile(r"(\d+)m(\d)")
+    depths = np.array([
+        float(f"{match.group(1)}.{match.group(2)}")
+        for col in depth_string
+        if (match := pattern.search(col))
+        ])
+
+    # Sort the depths increasingly
+    sorting_index = np.argsort(depths)
+    depth_string = depth_string[sorting_index]
+    depths = depths[sorting_index]
+
+    # Compute layer properties
+    layer_thickness = np.diff(depths)
+
+    # Compute temperatures at mid layer depths
+    mid_layer_temp = (df[depth_string[:-1]].values + df[depth_string[1:]].values) / 2
+
+    # Water specific heat capacity (J kg-1 K-1)
+    Cp_water = 4184
+    # Water density (kg m-3)
+    rho = 1000
+
+    # Compute energy contained in the water column
+    df['Hw'] = np.sum(rho * Cp_water * mid_layer_temp * layer_thickness, axis=1)
 
     return df
 

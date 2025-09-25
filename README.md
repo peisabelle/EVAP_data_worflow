@@ -28,9 +28,6 @@ These suffixes can be combined. For example, the variable LE_gf_mds_qf refers to
 6. Recompute albedo
 7. Recompute net radiation
 
-# Creation of a continuous radiation series for the "water station"
-Water station is the join between two stations: Romaine-2 reservoir shore (Berge) and Romaine-2 reservoir raft (Reservoir). To obtain a continuous annual time series of net radiation over the water surface, we combined the following data sets: net radiation measured from the raft from June to October, net radiation measured from the shore during periods of reservoir freeze-up, assuming equivalent winter conditions on the shore and on the reservoir (similar snow cover). During the transition periods (late April-early June and late October-December), incoming radiation fluxes were taken from the shore site, the reflected shortwave radiation from the reservoir was based on the albedo calculated from Patel and Rix (2019), and the emitted longwave radiation was estimated from Stefan-Boltzmann’s law considering a surface water temperature estimated from the 0.2-m deep sensor. A water emissivity of 0.99 was used because it provided the best comparison between the raft net radiometer measurements and the empirical Stefan-Boltzmann’s law using the water surface temperature in open water.
-
 # Gap filling
 -------------
 Gap filling is performed only for the stations 'Water stations', 'Forest stations', and 'Bernard Lake'. Gaps in the variables 'rad_longwave_down_CNR4', 'rad_shortwave_down_CNR4', 'rad_longwave_up_CNR4', 'rad_shortwave_up_CNR4' are filled by using ERA5 Land reanalysis that are corrected with in situ measurements and a random forest regressor. Albedo and net radiation are subsequently recomputed with continuous series. 
@@ -123,4 +120,53 @@ Gaps are filled with several technic applied in the following order
 There are two chains, one installed next to the raft (Romaine-2_reservoir_thermistor_chain-1, L=15), the other in the deepest section of the reservoir (Romaine-2_reservoir_thermistor_chain-2, L=70m). Romaine-2_reservoir_thermistor_chain is the average of both chains and is the only gap filled chain on Romaine-2 reservoir. 
 
 # Bernard lake chain
-There is no gap filled version of it yet. 
+There is no gap filled version of it yet.
+
+# Ice phenology
+Freeze-up and melt of the lakes is monitored with time lapse cameras. It is considered frozen when more 50% of the surface is covered by continuous ice (not fragmented). In the case where no direct view of the ice cover is available, MODIS imagery is used instead.
+
+
+# Other Meteorological Variables
+================================
+
+# Filtering
+    - Rainfall (Hyquest TB4) : Measurements are retained only if air temperature has remained above freezing during the past 5 days. This avoids contamination caused by ice or snow obstructing the funnel.
+    - Total precipitation (Geonor T200b) : Measurements are filtered using the Segmented Neutral Aggregating Filter (NAF_SEG; Smith et al., 2019).
+    - Wind speed (RMY 05103 anemometer) : Values are discarded if negative or greater than 30 m/s.
+
+# Gap Filling
+Certain variables needed to drive land surface models are also gap filled. The specific variables for each station are listed in:
+/Config/GapFillingConfig/[station_name]_slow_data.yml
+Gap filling is performed in two steps:
+1. Linear interpolation: Gaps are first filled by linear interpolation, up to a maximum window length defined per variable. For example, "air_temp_HC2S3": 6 means gaps of up to 6 time steps (3 hours) are interpolated.
+2. Reanalysis-based filling: Remaining gaps are filled with ERA5-Land or ERA5 reanalysis data. These values are bias-corrected using a random forest regressor trained on station observations.
+
+
+# Merging of data from different stations
+=========================================
+
+'Water stations', 'Forest stations', and 'Bernard Lake' are in fact a collection of several "sub-stations".
+
+# Water stations
+It is composed of:
+    - Berge
+    - Reservoir
+    - Berge_precip
+    - Romaine-2_reservoir_thermistor_chain-1
+    - Romaine-2_reservoir_thermistor_chain-2
+    
+Radiations are handled in a specific way. To obtain a continuous annual time series of net radiation over the water surface, we combined the following data sets: net radiation measured from the raft from June to October, net radiation measured from the shore during periods of reservoir freeze-up, assuming equivalent winter conditions on the shore and on the reservoir (similar snow cover). During the transition periods (late April-early June and late October-December), incoming radiation fluxes were taken from the shore site, the reflected shortwave radiation from the reservoir was based on the albedo calculated from Patel and Rix (2019), and the emitted longwave radiation was estimated from Stefan-Boltzmann’s law considering a surface water temperature estimated from the 0.2-m deep sensor. A water emissivity of 0.99 was used because it provided the best comparison between the raft net radiometer measurements and the empirical Stefan-Boltzmann’s law using the water surface temperature in open water.
+
+# Forest stations
+It is composed of:
+    - Foret ouest
+    - Foret est
+    - Foret sol
+    - Foret precip
+    - Foret neige
+
+# Bernard lake
+It is composed of:
+    - Bernard lake
+    - Bernard_lake_thermistor_chain
+    - Foret precip

@@ -41,10 +41,15 @@ df2 = pm.thermistors.list_merge_filter('Romaine-2_reservoir_thermistor_chain-2',
 pm.thermistors.save(df2,'Romaine-2_reservoir_thermistor_chain-2', finalOutDir)
 df = pm.thermistors.average(df1, df2)
 df = pm.thermistors.gap_fill(df)
+df = pm.thermistors.add_ice_phenology(df, miscDataDir+'Romaine-2_reservoir_ice_phenology')
+df = pm.thermistors.compute_energy_storage(df)
 pm.thermistors.save(df,'Romaine-2_reservoir_thermistor_chain', finalOutDir)
 df = pm.thermistors.list_merge_filter('Bernard_lake_thermistor_chain', dates, rawFileDir)
 df = pm.thermistors.gap_fill(df)
+df = pm.thermistors.add_ice_phenology(df, miscDataDir+'Bernard_lake_ice_phenology')
+df = pm.thermistors.compute_energy_storage(df)
 pm.thermistors.save(df,'Bernard_lake_thermistor_chain', finalOutDir)
+
 # Perform ERA5 extraction and handling
 for iStation in gapfilledStation:
     reanalysis_config = dl.yaml_file(reanalysisConfigDir, iStation)
@@ -68,7 +73,8 @@ for iStation in CampbellStations:
     df = dfm.create(dates)
     df = dfm.merge_files(df,slow_files,'TOA5')
     # Rename and trim slow variables
-    df = pm.rename_trim_vars(iStation,varNameExcelSheet,df,'cs')
+    db_name_map = pm.names.map_db_names(iStation, varNameExcelSheet, 'cs')
+    df = pm.names.rename_trim(iStation, df, db_name_map)
 
     if iStation in eddyCovStations:
         # Ascii to eddypro
@@ -80,8 +86,8 @@ for iStation in CampbellStations:
         eddy_df = dfm.create(dates)
         eddy_df = dfm.merge_files(eddy_df,eddypro_files,'EddyPro')
         # Rename and trim eddy variables
-        eddy_df = pm.rename_trim_vars(iStation,varNameExcelSheet,
-                                      eddy_df,'eddypro')
+        db_name_map = pm.names.map_db_names(iStation, varNameExcelSheet, 'eddypro')
+        eddy_df = pm.rename_trim(iStation, df, db_name_map)
         # Merge slow and eddy data
         df = dfm.merge(df,eddy_df)
 
