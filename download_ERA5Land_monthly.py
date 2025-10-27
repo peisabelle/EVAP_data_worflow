@@ -118,8 +118,8 @@ def retrieve_ERA5land_FM(dates, dest_folder):
     print('Done!\n')
 
 # Execution
-dest_folder = 'C:\\Users\\peisa\\Documents\\EVAP\\Data_ERA5_monthly\\'
+dest_folder = 'C:\\Users\\peisa\\Documents\\Data_ERA5_monthly\\'
 
-dates = {'start':'2025-04-03','end':'2025-05-14'}
+dates = {'start':'2025-05-14','end':'2025-09-30'}
 
 retrieve_ERA5land_FM(dates, dest_folder)
