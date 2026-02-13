@@ -80,7 +80,7 @@ def merge(dates, csv_files):
         return retrieval_dates
 
 
-    for counter, file in enumerate(tqdm(csv_files)):
+    for counter, file in enumerate(tqdm(csv_files, desc='Merging thermistors')):
 
         if 'pro_oceanus' in file.stem:
             print('Pro oceanus sensors not implemented yet. DCO2 data skipped')
@@ -412,7 +412,7 @@ def gap_fill(df):
 
         df = vertical_extrapolation(df, depths)
         if var_type == 'water_temp': df = temporal_extrapolation(df, depths)
-        df = distant_extrapolation(df, depths)
+        # df = distant_extrapolation(df, depths) # To be replaced by some smarter algorithm
         df = yearly_avg_extrapolation(df, depths)
 
         # Last hope interpolation
