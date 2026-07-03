@@ -11,7 +11,7 @@ import pandas as pd
 
 ### Define paths
 
-eddyCovStations =   ["Juvenile_SE","Sapling","Neige","Regeneration","Regeneration_CPEC"]
+eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Neige","Regeneration","Regeneration_CPEC"]
 
 asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
 eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
@@ -19,7 +19,7 @@ eddyproConfigDir    = "./Config/EddyProConfig/"
 
 ### Process eddy covariance stations - Batch process EddyPro
 
-dates = {'start': '2025-09-30', 'end': '2026-03-13'}
+dates = {'start': '2026-04-28', 'end': '2026-06-09'}
 
 # # Loop over stations
 for iStation in eddyCovStations:

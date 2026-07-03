@@ -41,9 +41,9 @@ out_rich=1
 out_metadata=1
 make_dataset=1
 pr_subset=1
-pr_start_date=2025-09-30
+pr_start_date=2026-04-28
 pr_start_time=00:00
-pr_end_date=2026-03-13
+pr_end_date=2026-06-09
 pr_end_time=00:00
 hf_meth=1
 lf_meth=1
@@ -75,8 +75,8 @@ ru_its_meth=0
 ru_tlag_max=10.0
 
 [FluxCorrection_SpectralAnalysis_General]
-sa_start_date=2025-09-30
-sa_end_date=2026-03-13
+sa_start_date=2026-04-28
+sa_end_date=2026-06-09
 sa_start_time=00:00
 sa_end_time=00:00
 sa_mode=1
@@ -101,7 +101,7 @@ sa_min_st_le=3.0000
 sa_min_st_h=5.0000
 add_sonic_lptf=1
 horst_lens=2
-ex_file=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Neige/eddypro_FM_Neige_fluxnet_2026-03-24T060206_adv.csv
+ex_file=E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/Neige/eddypro_FM_Neige_fluxnet_2026-06-11T045908_adv.csv
 sa_bin_spectra=
 sa_full_spectra=
 ex_dir=
@@ -340,8 +340,8 @@ aa_lim=10.0
 ns_hf_lim=0.5
 
 [RawProcess_TiltCorrection_Settings]
-pf_start_date=2025-09-30
-pf_end_date=2026-03-13
+pf_start_date=2026-04-28
+pf_end_date=2026-06-09
 pf_start_time=00:00
 pf_end_time=00:00
 pf_mode=1
