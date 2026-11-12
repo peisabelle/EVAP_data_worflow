@@ -26,8 +26,12 @@ def find_uncorrected_files(folder, overwrite=False):
             timestamp = name.replace("_eddy_corr.csv", "")
             eddy_corr_files.add(timestamp)
 
-    # timestamps where eddy exists but eddy_corr is missing
-    missing_corr_timestamp = eddy_files - eddy_corr_files
+    if not overwrite:
+        # timestamps where eddy exists but eddy_corr is missing
+        missing_corr_timestamp = eddy_files - eddy_corr_files
+    else:
+        # return all eddy, regardless if eddy_corr exists
+        missing_corr_timestamp = eddy_files
 
     # corresponding eddy filenames
     missing_corr_eddy_files = [
@@ -74,6 +78,7 @@ def correct_densities(station, corr_factors, uncorrected_files):
                 return c
 
     # TODO Write option to overwrite last calibration if still open
+    # TODO Write a correction for CO2
 
     # Open log file
     logf = open( os.path.join(
@@ -188,6 +193,10 @@ def linear_func(T):
     This function generates a value to weight the correction according to
     temperature. If T=-20°C, w= 1, if T=+20°C, w=0
     """
+    if T<-20:
+        return 1
+    if T>20:
+        return 0
     return -0.5/20 * T + 0.5
 
 

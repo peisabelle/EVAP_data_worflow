@@ -1,6 +1,6 @@
 lon: -63.3898409
 lat: 50.8614547
-proxy_stations: [Foret_ouest,Foret_est,Reservoir,Berge]
+proxy_stations: [Bernard_spruce_moss_west,Bernard_spruce_moss_east,Romaine-2_reservoir_raft,Romaine-2_reservoir_shore]
 station_type: water
 anemometer: propeller
 radiation: True
