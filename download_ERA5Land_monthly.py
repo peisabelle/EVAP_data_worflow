@@ -120,6 +120,6 @@ def retrieve_ERA5land_FM(dates, dest_folder):
 # Execution
 dest_folder = 'C:\\Users\\peisa\\Documents\\Data_ERA5_monthly\\'
 
-dates = {'start':'2026-04-29','end':'2026-06-09'}
+dates = {'start':'2026-06-10','end':'2026-11-09'}
 
 retrieve_ERA5land_FM(dates, dest_folder)

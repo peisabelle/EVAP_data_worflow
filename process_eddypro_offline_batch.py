@@ -6,24 +6,20 @@ Created on Mon Mar  8 10:26:26 2021
 """
 
 import process_micromet as pm
+import data_paths as path
 from utils import data_loader as dl, dataframe_manager as dfm
 import pandas as pd
 
-### Define paths
+### Define stations
 
-eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Neige","Regeneration","Regeneration_CPEC"]
-
-asciiOutDir         = "E:/EVAP/Data_EVAP/Raw_Data/ASCII/"
-eddyproOutDir       = "E:/EVAP/Data_EVAP/Processed_Data/EddyPro_FM/"
-eddyproConfigDir    = "./Config/EddyProConfig/"
+eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Neige","Regeneration_OPEC","Regeneration_CPEC"]
 
 ### Process eddy covariance stations - Batch process EddyPro
 
-dates = {'start': '2026-04-28', 'end': '2026-06-09'}
+dates = {'start': '2026-06-10', 'end': '2026-11-09'}
 
 # # Loop over stations
 for iStation in eddyCovStations:
     # Ascii to eddypro
-    pm.eddypro.run(iStation,asciiOutDir,eddyproConfigDir,
-                   eddyproOutDir,dates)
-
+    pm.eddypro.run(iStation,path.asciiOutDir,path.eddyproConfigDir,
+                   path.eddyproOutDir,dates)
