@@ -12,7 +12,7 @@ import pandas as pd
 
 ### Define stations
 
-eddyCovStations =   ["Juvenile_NO","Juvenile_SE","Sapling","Neige","Regeneration_OPEC","Regeneration_CPEC"]
+eddyCovStations =   ["Regeneration_OPEC","Regeneration_CPEC"] #"Juvenile_NO","Juvenile_SE","Sapling","Neige",
 
 ### Process eddy covariance stations - Batch process EddyPro
 
