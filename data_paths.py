@@ -6,11 +6,11 @@ Created on Mon Oct  6 11:26:23 2025
 """
 from pathlib import Path
 
-rawFileDir          = Path("D:/Ro2_micromet_raw_data/Data/Raw_data/Data")
+rawFileDir          = Path("F:\peisa\FM_Hydromet\Raw_Data\Binary")
 reanalysisDir       = Path("D:/Ro2_micromet_raw_data/Data/Reanalysis/")
-asciiOutDir         = Path("D:/Ro2_micromet_raw_data/Data/Ascii_data")
+asciiOutDir         = Path("F:\peisa\FM_Hydromet\Raw_Data\CSV")
 miscDataDir         = Path("D:/Ro2_micromet_raw_data/Data/Misc/")
-eddyproOutDir       = Path("D:/Ro2_micromet_processed_data/Eddypro_data/")
+eddyproOutDir       = Path("F:\peisa\FM_Hydromet\Processed_Data\EddyPro")
 intermediateOutDir  = Path("D:/Ro2_micromet_processed_data/Data/Intermediate/")
 finalOutDir         = Path("D:/Ro2_micromet_processed_data/Final_output/")
 varNameExcelSheet   = Path("./Resources/Variable_description_full.xlsx")
